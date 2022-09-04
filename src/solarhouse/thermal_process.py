@@ -18,7 +18,8 @@ class ThermalProcess:
     """
 
     def __init__(
-        self, t_start: float, building: Building, variant: str = "heat_to_mass", for_plots: list = ["mass"],
+        self, t_start: float, building: Building, variant: str = "heat_to_mass",
+        for_plots: list = ["mass"],
     ) -> None:
         """
         Initialize item of thermo calculation.
@@ -46,17 +47,25 @@ class ThermalProcess:
         self.building = building
         self.t_start = t_start
         self.elements_for_plots = for_plots
-        self.sun_power_data = self.building.power_data["sum_solar_power"].resample("1h").interpolate()
-        self.weather_data = self.building.weather_data["temp_air"].resample("1h").interpolate()
+        self.sun_power_data = self.building.power_data[
+            "sum_solar_power"
+        ].resample("1h").interpolate()
+        self.weather_data = self.building.weather_data[
+            "temp_air"
+        ].resample("1h").interpolate()
 
         self.alpha_room = 1 / 0.13
         self.alpha_out = 1 / 0.04
 
         self.dx = 0.005  # meters
         self.heat_accumulator_volume = self.building.heat_accumulator["volume"]
-        self.heat_accumulator_density = self.building.get_prop(self.building.heat_accumulator["material"], "density")
+        self.heat_accumulator_density = self.building.get_prop(
+            self.building.heat_accumulator["material"], "density"
+        )
         if not self.building.heat_accumulator["volume"]:
-            self.heat_accumulator_volume = self.building.heat_accumulator["mass"] / self.heat_accumulator_density
+            self.heat_accumulator_volume = (
+                self.building.heat_accumulator["mass"] / self.heat_accumulator_density
+            )
 
         mass = ThermalElement(
             name="mass",

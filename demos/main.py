@@ -11,7 +11,7 @@ import solarhouse.export as export
 def main():
     calc = Calculation(
         tz=settings.TZ,
-        geo=settings.GEO,
+        variant='heat_to_mass',
         building=Building(
             mesh_file=settings.PATH_FILE_OBJECT,
             geo=settings.GEO,

@@ -108,7 +108,8 @@ class Building:
     def __init__(
         self,
         mesh_file: str,
-        geo: dict,
+        latitude:float,
+        longitude: float,
         wall_material: str = "adobe",
         wall_thickness: float = 0.3,
         start_temp_in: float = 20,
@@ -148,7 +149,8 @@ class Building:
         self.weather_data = {}
         self.power_data = {}
         self.power_data_by_days = None
-        self.location = Location(latitude=geo["latitude"], longitude=geo["longitude"],)
+        self.latitude = latitude
+        self.longitude = longitude
         self.pv = PVSystem(
             surface_tilt=45,
             surface_azimuth=180,
@@ -156,7 +158,10 @@ class Building:
             inverter_parameters={"pdc0": 240},
             temperature_model_parameters=temp_model_pars,
         )
-        self.mc = ModelChain(self.pv, self.location, aoi_model="no_loss", spectral_model="no_loss")
+        self.location = Location(latitude=self.latitude, longitude=self.longitude)
+        self.mc = ModelChain(
+            self.pv, self.location, aoi_model="no_loss", spectral_model="no_loss"
+        )
         return
 
     def __correct_wall_thickness(self) -> None:
@@ -316,7 +321,9 @@ class Building:
         refl_power = power * kr
         return refl_power
 
-    def get_pv_power_face(self, face_tilt: float, face_azimuth: float, face_area: float) -> float:
+    def get_pv_power_face(
+            self, face_tilt: float, face_azimuth: float, face_area: float
+    ) -> float:
         """
         Get Irradiation from PVLIB.
 
